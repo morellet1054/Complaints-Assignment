@@ -1,0 +1,113 @@
+---
+title: "Complaints Assignment Tinsley"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(janitor)
+library(glue)
+library(leaflet)
+library(RColorBrewer)
+library(htmlwidgets)
+library(htmltools)
+library(tigris)
+library(tmap)
+library(tmaptools)
+library(plotly)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+# Data Preparation
+
+complaints_donut <- function(complaints){
+  complaints %>%
+    arrange(company) %>% 
+    count(product) 
+  }
+
+Product_Complaints <- complaints_donut(complaints)
+
+#Data Visualisation
+fig <- plot_ly(data=Product_Complaints, labels = ~product, values = ~n)
+
+fig <- fig %>% add_pie(hole = 0.6) #would make a pie chart, to make a donut chart add the hole
+
+fig <- fig %>% layout(
+                  title = "Number of Complaints by Product",  showlegend = F,
+                  xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                  yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig 
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+head(complaints)
+
+complaints_bar <- function(complaints) { #made a function to filter the data
+  complaints %>%
+    filter(product == "Credit reporting, credit repair services, or other personal consumer reports") %>% 
+    count(company) %>% 
+    filter(n>20000)}
+
+complaints_bar(complaints)
+  
+Company_products <- complaints_bar(complaints)
+
+plot_ly(data = Company_products,                    #create a bar chart from it
+        x = ~company,
+        y = ~n,
+        type = "bar"
+        ) %>% 
+  layout(title = "Most Credit and Consumer Reports Complaints by Company",
+         xaxis = list(title = "Company"),
+         yaxis = list (title = "Number of Debt Collection Complaints"))
+
+
+```
+
+### Chart C
+
+```{r}
+
+Experian_bar <- function(complaints) { #made a function to filter the data
+  complaints %>%
+    filter(company == "Experian Information Solutions Inc.") %>% 
+    group_by(company_response_to_consumer) %>% 
+    count(company_response_to_consumer)
+  }
+complaints_bar(complaints)
+  
+Experian_Responses <- Experian_bar(complaints)
+
+plot_ly(data = Experian_Responses,                    #create a bar chart from it
+        x = ~company_response_to_consumer,
+        y = ~n,
+        type = "bar"
+        ) %>% 
+  layout(title = "Experian Responses to Consumer Complaints",
+         xaxis = list(title = "Response"),
+         yaxis = list (title = "Number"))
+
+
+
+
+```
+
