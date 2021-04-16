@@ -40,7 +40,7 @@ complaints_counted <- complaints_data %>%
     arrange(company) %>% 
     count(product) 
 
-complaints_counted
+# complaints_counted
 ```
 
 
@@ -96,7 +96,7 @@ experian_responses <- complaints_data %>%
     group_by(company_response_to_consumer) %>% 
     count(company_response_to_consumer)
 
-experian_responses
+# experian_responses
 ```
 
 
